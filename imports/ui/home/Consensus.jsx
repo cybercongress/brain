@@ -95,7 +95,7 @@ export default class Consensus extends Component{
                 let current = moment();
                 let diff = genesisTime.diff(current);
 
-                return <div className="text-center"><Card body inverse color="danger">
+                return <div className="text-center"><Card body inverse>
                     <span><T>chainStatus.startMessage</T></span>
                 </Card>
                 <CountDown genesisTime={diff/1000}/>
