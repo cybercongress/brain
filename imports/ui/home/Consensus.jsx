@@ -91,7 +91,7 @@ export default class Consensus extends Component{
                     </div>);
             }
             else{
-                let genesisTime = moment(Meteor.settings.public.genesisTime);
+                let genesisTime = moment('2019-12-20T18:00:00.21122Z');
                 let current = moment();
                 let diff = genesisTime.diff(current);
 
