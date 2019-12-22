@@ -57,6 +57,15 @@ let errors = {
         103: "Validator Not Jailed",
         104: "Missing Self Delegation",
         105: "Self Delegation Too Low"
+    },
+    "cyberd": {
+        1: "link already exists",
+        2: "invalid cid",
+        3: "cid not found",
+        4: "not enough bandwidth to make transaction",
+        5: "duplicated link",
+        6: "no links found",
+        7: "exceeded max block bandwidth"
     }
 }
 
@@ -73,8 +82,8 @@ export default class CosmosErrors extends Component {
                     if (!props.logs[i].success){
                         let error = JSON.parse(props.logs[i].log);
                         this.state = {
-                            error: errors[error.codespace][error.code],
-                            message: error.message
+                            error: errors[error.codespace][error.code] || errors.sdk[1],
+                            message: error.message || ""
                         }
                     }
                 }
