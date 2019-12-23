@@ -98,7 +98,8 @@ export default class Transactions extends Component{
                     open={this.state.sidebarOpen}
                     onSetOpen={this.onSetSidebarOpen}
                     styles={{ sidebar: { 
-                        background: "white", 
+                        background: "#000", 
+                        color: '#fff',
                         position: "fixed",
                         width: '85%',
                         zIndex: 4

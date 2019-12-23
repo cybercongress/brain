@@ -77,7 +77,6 @@ export default class Activites extends Component {
             return <p><Account address={msg.value.from_address} /> {(this.props.invalid)?<T>activities.failedTo</T>:''}<MsgType type={msg.type} /> <em className="text-success">{amount}</em> <T>activities.to</T> <span className="address"><Account address={msg.value.to_address} /></span><T>common.fullStop</T></p>
         case "cosmos-sdk/MsgMultiSend":
             return <MultiSend msg={msg} />
-
             // staking
         case "cosmos-sdk/MsgCreateValidator":
             return (
@@ -108,7 +107,6 @@ export default class Activites extends Component {
             return <p><Account address={msg.value.delegator_address} /> {(this.props.invalid)?<T>activities.failedTo</T>:''}<MsgType type={msg.type} /> <em className="text-warning">{new Coin(msg.value.amount.amount).toString()}</em> <T>activities.from</T> <Account address={msg.value.validator_address} /><T>common.fullStop</T></p>
         case "cosmos-sdk/MsgBeginRedelegate":
             return <p><Account address={msg.value.delegator_address} /> {(this.props.invalid)?<T>activities.failedTo</T>:''}<MsgType type={msg.type} /> <em className="text-warning">{new Coin(msg.value.amount.amount).toString()}</em> <T>activities.from</T> <Account address={msg.value.validator_src_address} /> <T>activities.to</T> <Account address={msg.value.validator_dst_address} /><T>common.fullStop</T></p>
-
             // gov
         case "cosmos-sdk/MsgSubmitProposal":
             const proposalId = _.get(this.props, 'events[2].attributes[0].value', null)
@@ -118,7 +116,6 @@ export default class Activites extends Component {
             return <p><Account address={msg.value.depositor} /> {(this.props.invalid)?<T>activities.failedTo</T>:''}<MsgType type={msg.type} /> <em className="text-info">{msg.value.amount.map((amount,i) =>new Coin(amount.amount).toString()).join(', ')}</em> <T>activities.to</T> <Link to={"/proposals/"+msg.value.proposal_id}><T>proposals.proposal</T> {msg.value.proposal_id}</Link><T>common.fullStop</T></p>
         case "cosmos-sdk/MsgVote":
             return <p><Account address={msg.value.voter} /> {(this.props.invalid)?<T>activities.failedTo</T>:''}<MsgType type={msg.type} />  <Link to={"/proposals/"+msg.value.proposal_id}><T>proposals.proposal</T> {msg.value.proposal_id}</Link> <T>activities.withA</T> <em className="text-info">{msg.value.option}</em><T>common.fullStop</T></p>
-
             // distribution
         case "cosmos-sdk/MsgWithdrawValidatorCommission":
             return (
@@ -141,17 +138,14 @@ export default class Activites extends Component {
             );
         case "cosmos-sdk/MsgModifyWithdrawAddress":
             return <p><Account address={msg.value.delegator_address}/> {(this.props.invalid)?<T>activities.failedTo</T>:''}<MsgType type={msg.type} /></p>
-
             // slashing
         case "cosmos-sdk/MsgUnjail":
             return <p><Account address={msg.value.delegator_address}/> {(this.props.invalid)?<T>activities.failedTo</T>:''}<MsgType type={msg.type} /><T>common.fullStop</T></p>
-
             // ibc
         case "cosmos-sdk/IBCTransferMsg":
             return <MsgType type={msg.type} />;
         case "cosmos-sdk/IBCReceiveMsg":
             return <MsgType type={msg.type} />
-
         default:
             return <div>{JSON.stringify(msg.value)}</div>;
         }
