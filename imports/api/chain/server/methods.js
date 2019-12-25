@@ -89,6 +89,16 @@ Meteor.methods({
                     console.log(e);
                 }
 
+                url = LCD + '/supply/total/'+Meteor.settings.public.mintingDenom;
+                try{
+                    response = HTTP.get(url);
+                    let supply = JSON.parse(response.content).result;
+                    chainStates.totalSupply = parseInt(supply);
+                }
+                catch(e){
+                    console.log(e);
+                }
+
                 url = LCD + '/distribution/community_pool';
                 try {
                     response = HTTP.get(url);
@@ -124,7 +134,7 @@ Meteor.methods({
                     response = HTTP.get(url);
                     let provisions = JSON.parse(response.content);
                     if (provisions){
-                        chainStates.annualProvisions = parseFloat(provisions)
+                        chainStates.annualProvisions = parseFloat(provisions.result)
                     }
                 }
                 catch(e){
@@ -154,7 +164,7 @@ Meteor.methods({
         if (chain && chain.readGenesis){
             console.log('Genesis file has been processed');
         }
-        else{
+        else if (Meteor.settings.debug.readGenesis) {
             console.log('=== Start processing genesis file ===');
             let response = HTTP.get(Meteor.settings.genesisFile);
             let genesis = JSON.parse(response.content);

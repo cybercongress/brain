@@ -12,7 +12,9 @@ import { Helmet } from 'react-helmet';
 import posed from 'react-pose';
 import i18n from 'meteor/universe:i18n';
 import { Meteor } from 'meteor/meteor';
-import Coin from '/both/utils/coins.js'
+import Coin from '/both/utils/coins.js';
+import TimeStamp from '../components/TimeStamp.jsx';
+import { ProposalActionButtons } from '../ledger/LedgerActions.jsx';
 
 const T = i18n.createComponent();
 
@@ -47,6 +49,13 @@ export default class Proposal extends Component{
         }
     }
 
+    static getDerivedStateFromProps(props, state) {
+        if (state.user !== localStorage.getItem(CURRENTUSERADDR)) {
+            return {user: localStorage.getItem(CURRENTUSERADDR)};
+        }
+        return null;
+    }
+
     componentDidUpdate(prevProps){
         if (this.props.proposal != prevProps.proposal){
             // console.log(this.props.proposal.value);
@@ -58,7 +67,8 @@ export default class Proposal extends Component{
             });
 
             let now = moment();
-            let totalVotingPower = this.props.chain.activeVotingPower * Meteor.settings.public.stakingFraction;
+            const powerReduction = Meteor.settings.public.powerReduction || Meteor.settings.public.stakingFraction;
+            let totalVotingPower = this.props.chain.activeVotingPower * powerReduction;
             if (this.props.proposal.voting_start_time != '0001-01-01T00:00:00Z'){
                 if (now.diff(moment(this.props.proposal.voting_start_time)) > 0){
                     let endVotingTime = moment(this.props.proposal.voting_end_time);
@@ -71,7 +81,7 @@ export default class Proposal extends Component{
 
                         this.setState({
                             tally: this.props.proposal.tally,
-                            tallyDate: moment.utc(this.props.proposal.updatedAt).format("D MMM YYYY, h:mm:ssa z"),
+                            tallyDate: <TimeStamp time={this.props.proposal.updatedAt}/>,
                             voteStarted: true,
                             voteEnded: false,
                             totalVotes: totalVotes,
@@ -261,7 +271,8 @@ export default class Proposal extends Component{
             if (this.props.proposalExist && this.state.proposal != ''){
                 // console.log(this.state.proposal);
                 const proposalId = Number(this.props.proposal.proposalId), maxProposalId = Number(this.props.proposalCount);
-                let totalVotingPower = this.props.chain.activeVotingPower * Meteor.settings.public.stakingFraction;
+                const powerReduction = Meteor.settings.public.powerReduction || Meteor.settings.public.stakingFraction;
+                let totalVotingPower = this.props.chain.activeVotingPower * powerReduction;
                 return <div id='proposals'>
                     <Helmet>
                         <title>{this.props.proposal.content.value.title} | The Big Dipper</title>
@@ -271,7 +282,8 @@ export default class Proposal extends Component{
                     <div className="proposal">
                         <Row className="mb-2">
                             <Col md={3} className="label"><T>proposals.proposalID</T></Col>
-                            <Col md={9} className="value">{this.props.proposal.proposalId}</Col>
+                            <Col md={this.state.user?6:9} className="value">{this.props.proposal.proposalId}</Col>
+                            {this.state.user?<Col md={3}><ProposalActionButtons history={this.props.history} proposalId={proposalId}/></Col>:null}
                         </Row>
                         <Row className="mb-2 border-top">
                             <Col md={3} className="label"><T>proposals.proposer</T></Col>
@@ -389,19 +401,19 @@ export default class Proposal extends Component{
                         </Row>
                         <Row className="mb-2 border-top">
                             <Col md={3} className="label"><T>proposals.submitTime</T></Col>
-                            <Col md={9} className="value">{moment.utc(this.state.proposal.submit_time).format("D MMM YYYY, h:mm:ssa z")}</Col>
+                            <Col md={9} className="value"><TimeStamp time={this.state.proposal.submit_time}/></Col>
                         </Row>
                         <Row className="mb-2 border-top">
                             <Col md={3} className="label"><T>proposals.depositEndTime</T></Col>
-                            <Col md={9} className="value">{moment.utc(this.state.proposal.deposit_end_time).format("D MMM YYYY, h:mm:ssa z")}</Col>
+                            <Col md={9} className="value"><TimeStamp time={this.state.proposal.deposit_end_time}/></Col>
                         </Row>
                         <Row className="mb-2 border-top">
                             <Col md={3} className="label"><T>proposals.votingStartTime</T></Col>
-                            <Col md={9} className="value">{(this.state.proposal.voting_start_time != '0001-01-01T00:00:00Z')?moment.utc(this.state.proposal.voting_start_time).format("D MMM YYYY, h:mm:ssa z"):'-'}</Col>
+                            <Col md={9} className="value">{(this.state.proposal.voting_start_time != '0001-01-01T00:00:00Z')?<TimeStamp time={this.state.proposal.voting_start_time}/>:'-'}</Col>
                         </Row>
                         <Row className="mb-2 border-top">
                             <Col md={3} className="label"><T>proposals.votingEndTime</T></Col>
-                            <Col md={9} className="value">{(this.state.proposal.voting_start_time != '0001-01-01T00:00:00Z')?moment.utc(this.state.proposal.voting_end_time).format("D MMM YYYY, h:mm:ssa z"):'-'}</Col>
+                            <Col md={9} className="value">{(this.state.proposal.voting_start_time != '0001-01-01T00:00:00Z')?<TimeStamp time={this.state.proposal.voting_end_time}/>:'-'}</Col>
                         </Row>
                     </div>
                 </Card>

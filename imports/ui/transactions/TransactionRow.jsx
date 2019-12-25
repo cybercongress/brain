@@ -8,11 +8,12 @@ import CosmosErrors from '../components/CosmosErrors.jsx';
 import TimeAgo from '../components/TimeAgo.jsx';
 import numbro from 'numbro';
 import Coin from '/both/utils/coins.js'
+import SentryBoundary from '../components/SentryBoundary.jsx';
 
 export const TransactionRow = (props) => {
     let tx = props.tx;
     // console.log(tx);
-    return <Row className={(tx.code)?"tx-info invalid":"tx-info"}>
+    return <SentryBoundary><Row className={(tx.code)?"tx-info invalid":"tx-info"}>
         <Col xs={12} lg={7} className="activity">{(tx.tx.value.msg && tx.tx.value.msg.length >0)?tx.tx.value.msg.map((msg,i) => {
             return <Card body key={i}><Activities msg={msg} invalid={(!!tx.code)} events={tx.events} /></Card>
         }):''}</Col>
@@ -20,7 +21,7 @@ export const TransactionRow = (props) => {
         {(!props.blockList)?<Col xs={6} md={9} lg={{size:2,order:"last"}} className="text-nowrap"><i className="material-icons">schedule</i> <span>{tx.block()?<TimeAgo time={tx.block().time} />:''}</span></Col>:''}
         {(!props.blockList)?<Col xs={4} md={2} lg={1}><i className="fas fa-database d-lg-none"></i> <Link to={"/blocks/"+tx.height}>{numbro(tx.height).format("0,0")}</Link></Col>:''}
         <Col xs={(!props.blockList)?2:4} md={1}>{(!tx.code)?<TxIcon valid />:<TxIcon />}</Col>
-        <Col xs={(!props.blockList)?6:8} md={(!props.blockList)?9:4} lg={2} className="fee"><i className="material-icons d-lg-none">monetization_on</i> {tx.tx.value.fee.amount?tx.tx.value.fee.amount.map((fee,i) => {
+        <Col xs={(!props.blockList)?6:8} md={(!props.blockList)?9:4} lg={2} className="fee"><i className="material-icons d-lg-none">monetization_on</i> {(tx.tx.value.fee.amount.length > 0)?tx.tx.value.fee.amount.map((fee,i) => {
             return <span className="text-nowrap" key={i}>{new Coin(fee.amount).toString()}</span>
         }):<span>No fee</span>}</Col>
         {(tx.code)?<Col xs={{size:12, order:"last"}} className="error">
@@ -33,5 +34,5 @@ export const TransactionRow = (props) => {
                 />
             </Alert>
         </Col>:''}
-    </Row>
+    </Row></SentryBoundary>
 }
