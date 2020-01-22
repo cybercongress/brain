@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+    mongoDB:
+        image: mongo:latest
+        restart: always
+        container_name: mongobrain
+        volumes:
+            - ./mongo_data:/data/db
+        networks:
+            forbole-net:
+                ipv4_address: 172.28.0.2
+        ports:
+            - 127.0.0.1:3001:27017
+    forbole:
+        image: brain-docker:latest
+        restart: always
+        container_name: brain
+        volumes:
+            - ./brain_data/bin:/opt/brain-bin
+            - ./brain_data/settings:/opt/settings
+        environment:
+            - MONGO_URL=mongodb://172.28.0.2:27017/meteor
+        networks:
+            forbole-net:
+                ipv4_address: 172.28.0.3
+        ports:
+            - 127.0.0.1:3000:3000
+
+networks:
+  forbole-net:
+    driver: bridge
+    ipam:
+        driver: default
+        config:
+            - subnet: 172.28.0.0/24
